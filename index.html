@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rock, Paper, Scissors</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #8e2de2);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      width: 400px;
+      max-width: 90%;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      letter-spacing: 1px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background: #8e2de2;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 25px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      min-width: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      min-height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Rock, Paper, Scissors</h1>
+
+    <div class="buttons">
+      <button id="rock"><i class="fas fa-gem"></i> Rock</button>
+      <button id="paper"><i class="fas fa-file-alt"></i> Paper</button>
+      <button id="scissors"><i class="fas fa-cut"></i> Scissors</button>
+    </div>
+
+    <p id="result">Make your move!</p>
+  </div>
+
+  <script src="rps.js"></script>
+  <script>
+    (async () => {
+        const Module = await createModule();
+
+        const initGame = Module.cwrap('initGame', null, []);
+        const computerMove = Module.cwrap('computerMove', 'number', []);
+        const checkWinner = Module.cwrap('checkWinner', 'number', ['number','number']);
+
+        initGame();
+
+        const moves = ["Rock", "Paper", "Scissors"];
+
+        function play(playerChoice) {
+            const compChoice = computerMove();
+            const outcome = checkWinner(playerChoice, compChoice);
+
+            let msg = `You: ${moves[playerChoice]} | Computer: ${moves[compChoice]}<br>`;
+            if (outcome === 0) msg += "It's a Draw!";
+            else if (outcome === 1) msg += "You Win!";
+            else msg += "Computer Wins!";
+
+            document.getElementById("result").innerHTML = msg;
+        }
+
+        document.getElementById("rock").addEventListener("click", () => play(0));
+        document.getElementById("paper").addEventListener("click", () => play(1));
+        document.getElementById("scissors").addEventListener("click", () => play(2));
+    })();
+  </script>
+</body>
+</html>
